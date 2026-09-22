@@ -1,17 +1,38 @@
+"""
+Modelo SQLAlchemy: a representacao da tabela `tarefas` no banco de dados.
+
+Importante nao confundir isto com os schemas Pydantic (schemas.py). O modelo
+SQLAlchemy descreve a TABELA e como o Python conversa com o banco; os schemas
+Pydantic descrevem os formatos de dados que entram e saem pela API. Sao duas
+responsabilidades diferentes mesmo que os campos se pareçam.
+"""
+
 import enum
 from datetime import datetime, timezone
-from sqlalchemy import Enum as SqlEnum, String, Text
+
+from sqlalchemy import Enum as SqlEnum
+from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database import Base
 
 
 class StatusTarefa(str, enum.Enum):
+    """
+    Os 3 unicos valores validos para o status de uma tarefa.
+
+    Usar um Enum (em vez de aceitar qualquer string) faz o banco e a API
+    rejeitarem automaticamente valores invalidos como "em_progresso" ou
+    "feito" — apenas estes 3 nomes exatos sao aceitos.
+    """
+
     A_FAZER = "a_fazer"
     EM_ANDAMENTO = "em_andamento"
     CONCLUIDO = "concluido"
 
 
 def _agora() -> datetime:
+    """Horario atual em UTC, usado como default para as colunas de data."""
     return datetime.now(timezone.utc)
 
 
